@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Direct Methods Solver</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2>Dynamic Linear Solver</h2>
+        <p>แก้สมการเชิงเส้น N ตัวแปร (NxN)</p>
+    </header>
+
+    <div class="controls">
+        <label>ขนาด Matrix (N): </label>
+        <input type="number" id="size-input" value="3" min="2" max="10">
+        <button onclick="createGrid()" class="btn-create">สร้างตาราง</button>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="selectMethod(0)">1.1 Inverse Matrix</div>
+        <div class="tab" onclick="selectMethod(1)">1.2 Cramer's Rule</div>
+        <div class="tab" onclick="selectMethod(2)">1.3 Gauss Elim</div>
+        <div class="tab" onclick="selectMethod(3)">1.4 Gauss-Jordan</div>
+        <div class="tab" onclick="selectMethod(4)">1.5 LU Factor</div>
+    </div>
+
+    <div class="content">
+        <div class="description" id="method-desc">วิธี: หา Inverse ของ A แล้วคูณกับ B</div>
+
+        <div id="matrix-wrapper">
+            <div class="matrix-box" id="matrix-inputs"></div>
+        </div>
+
+        <button onclick="calculate()" class="btn-calc">คำนวณผลลัพธ์</button>
+
+        <div id="output-area">ผลการคำนวณและขั้นตอนจะปรากฏที่นี่...</div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
