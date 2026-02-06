@@ -1,5 +1,5 @@
 let currentMethod = 0;
-let N = 3;
+let N = 3; // ค่าเริ่มต้น
 
 const descriptions = [
     "1.1 Inverse Matrix: หา A⁻¹ แล้วคำนวณ X = A⁻¹B",
@@ -9,6 +9,7 @@ const descriptions = [
     "1.5 LU Factorization: แยก A = LU แล้วแก้ Ly=B, Ux=y"
 ];
 
+// สร้าง Grid ครั้งแรก
 window.onload = () => createGrid();
 
 function createGrid() {
@@ -20,6 +21,7 @@ function createGrid() {
     const container = document.getElementById('matrix-inputs');
     container.innerHTML = '';
     
+    // ตั้งค่า CSS Grid Columns แบบ Dynamic (N + 1)
     container.style.gridTemplateColumns = `repeat(${N + 1}, 1fr)`;
 
     for (let r = 0; r < N; r++) {
@@ -27,6 +29,7 @@ function createGrid() {
             let inp = document.createElement('input');
             inp.id = `val-${r}-${c}`;
             inp.type = "number";
+            // Random ค่าเริ่มต้น
             inp.value = (c === N) ? Math.floor(Math.random()*10) : (r === c ? 3 : Math.floor(Math.random()*3));
             if (c === N) inp.classList.add('result-col');
             container.appendChild(inp);
@@ -60,6 +63,7 @@ function calculate() {
     document.getElementById('output-area').innerText = ""; 
     const M = getMatrix();
     
+    // แยก A และ B
     let A = M.map(row => row.slice(0, N));
     let B = M.map(row => row[N]);
 
@@ -79,15 +83,20 @@ function calculate() {
     }
 }
 
+/* --- DYNAMIC ALGORITHMS --- */
+
+// 1.1 Inverse Matrix (Updated: Show Inverse Matrix)
 function methodInverse(A, B) {
     log("Step 1: คำนวณหา A⁻¹ (Inverse Matrix)...");
     
+    // สร้าง Augmented Matrix [A | I]
     let aug = [];
     for(let i=0; i<N; i++) {
         aug[i] = [...A[i]];
         for(let j=0; j<N; j++) aug[i].push(i===j ? 1 : 0);
     }
 
+    // Gauss-Jordan on Augmented Matrix
     for(let i=0; i<N; i++) {
         let pivot = aug[i][i];
         if(Math.abs(pivot) < 1e-9) throw "Pivot เป็น 0 (หา Inverse ไม่ได้)";
@@ -100,22 +109,26 @@ function methodInverse(A, B) {
         }
     }
 
+    // Extract Inverse
     let inv = [];
     for(let i=0; i<N; i++) inv[i] = aug[i].slice(N, 2*N);
     
+    // --- ส่วนที่เพิ่มเข้ามา: แสดงผล Inverse Matrix ---
     log("\n   👇 หน้าตาของ Inverse Matrix (A⁻¹):");
     for(let i=0; i<N; i++) {
         let rowStr = "   | ";
         for(let j=0; j<N; j++) {
+            // จัด format ให้สวยงาม (ทศนิยม 4 ตำแหน่ง)
             let val = inv[i][j];
             let valStr = val.toFixed(4);
-            if(val >= 0) valStr = " " + valStr; 
+            if(val >= 0) valStr = " " + valStr; // เติมช่องว่างถ้าเป็นบวกให้ตรงกับลบ
             rowStr += valStr + "  ";
         }
         rowStr += "|";
         log(rowStr);
     }
-    log(""); 
+    log(""); // เว้นบรรทัด
+    // ---------------------------------------------
     
     log("Step 2: คูณ Matrix X = A⁻¹ * B");
     let x = new Array(N).fill(0);
@@ -127,6 +140,7 @@ function methodInverse(A, B) {
     logResult(x);
 }
 
+// 1.2 Cramer's Rule
 function methodCramer(A, B) {
     let detA = getDeterminant(A);
     log(`Step 1: Det(A) = ${detA.toFixed(4)}`);
@@ -144,6 +158,7 @@ function methodCramer(A, B) {
     logResult(res);
 }
 
+// 1.3 Gauss Elimination
 function methodGauss(M) {
     let mat = JSON.parse(JSON.stringify(M));
     
@@ -171,6 +186,7 @@ function methodGauss(M) {
     logResult(x);
 }
 
+// 1.4 Gauss-Jordan
 function methodGaussJordan(M) {
     let mat = JSON.parse(JSON.stringify(M));
     
@@ -198,6 +214,7 @@ function methodGaussJordan(M) {
     logResult(x);
 }
 
+// 1.5 LU Factorization
 function methodLU(A, B) {
     log("Step 1: แยก L และ U");
     let L = Array.from({length: N}, () => Array(N).fill(0));
@@ -237,6 +254,7 @@ function methodLU(A, B) {
     logResult(x);
 }
 
+// Helper: Determinant
 function getDeterminant(matrix) {
     let m = matrix.map(row => [...row]);
     let n = m.length;
