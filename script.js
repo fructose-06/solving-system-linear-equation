@@ -1,5 +1,5 @@
 let currentMethod = 0;
-let N = 3; 
+let N = 3;
 
 const descriptions = [
     "1.1 Inverse Matrix: หา A⁻¹ แล้วคำนวณ X = A⁻¹B",
@@ -8,7 +8,6 @@ const descriptions = [
     "1.4 Gauss-Jordan: ทำจนได้ Reduced Row Echelon Form",
     "1.5 LU Factorization: แยก A = LU แล้วแก้ Ly=B, Ux=y"
 ];
-
 
 window.onload = () => createGrid();
 
@@ -80,7 +79,6 @@ function calculate() {
     }
 }
 
-
 function methodInverse(A, B) {
     log("Step 1: คำนวณหา A⁻¹ (Inverse Matrix)...");
     
@@ -105,7 +103,19 @@ function methodInverse(A, B) {
     let inv = [];
     for(let i=0; i<N; i++) inv[i] = aug[i].slice(N, 2*N);
     
-    log("   ได้ Inverse Matrix แล้ว");
+    log("\n   👇 หน้าตาของ Inverse Matrix (A⁻¹):");
+    for(let i=0; i<N; i++) {
+        let rowStr = "   | ";
+        for(let j=0; j<N; j++) {
+            let val = inv[i][j];
+            let valStr = val.toFixed(4);
+            if(val >= 0) valStr = " " + valStr; 
+            rowStr += valStr + "  ";
+        }
+        rowStr += "|";
+        log(rowStr);
+    }
+    log(""); 
     
     log("Step 2: คูณ Matrix X = A⁻¹ * B");
     let x = new Array(N).fill(0);
@@ -124,7 +134,6 @@ function methodCramer(A, B) {
 
     let res = [];
     for(let col=0; col<N; col++) {
-        // Copy A and replace column
         let Ai = A.map(row => [...row]);
         for(let row=0; row<N; row++) Ai[row][col] = B[row];
         
@@ -136,11 +145,10 @@ function methodCramer(A, B) {
 }
 
 function methodGauss(M) {
-    let mat = JSON.parse(JSON.stringify(M)); 
+    let mat = JSON.parse(JSON.stringify(M));
     
     log("Step 1: Forward Elimination");
     for(let i=0; i<N; i++) {
-        
         let maxRow = i;
         for(let k=i+1; k<N; k++) if(Math.abs(mat[k][i]) > Math.abs(mat[maxRow][i])) maxRow = k;
         [mat[i], mat[maxRow]] = [mat[maxRow], mat[i]];
@@ -163,13 +171,11 @@ function methodGauss(M) {
     logResult(x);
 }
 
-
 function methodGaussJordan(M) {
     let mat = JSON.parse(JSON.stringify(M));
     
     log("Step 1: Elimination to Reduced Row Echelon Form");
     for(let i=0; i<N; i++) {
-        
         let maxRow = i;
         for(let k=i+1; k<N; k++) if(Math.abs(mat[k][i]) > Math.abs(mat[maxRow][i])) maxRow = k;
         [mat[i], mat[maxRow]] = [mat[maxRow], mat[i]];
@@ -177,10 +183,8 @@ function methodGaussJordan(M) {
         let pivot = mat[i][i];
         if(Math.abs(pivot) < 1e-9) throw "Singular Matrix";
 
-        
         for(let j=i; j<=N; j++) mat[i][j] /= pivot;
 
-        
         for(let k=0; k<N; k++) {
             if(k !== i) {
                 let factor = mat[k][i];
@@ -194,20 +198,17 @@ function methodGaussJordan(M) {
     logResult(x);
 }
 
-
 function methodLU(A, B) {
     log("Step 1: แยก L และ U");
     let L = Array.from({length: N}, () => Array(N).fill(0));
     let U = Array.from({length: N}, () => Array(N).fill(0));
 
     for(let i=0; i<N; i++) {
-        
         for(let k=i; k<N; k++) {
             let sum = 0;
             for(let j=0; j<i; j++) sum += (L[i][j] * U[j][k]);
             U[i][k] = A[i][k] - sum;
         }
-        
         for(let k=i; k<N; k++) {
             if (i === k) L[i][i] = 1;
             else {
@@ -236,19 +237,16 @@ function methodLU(A, B) {
     logResult(x);
 }
 
-
 function getDeterminant(matrix) {
-    let m = matrix.map(row => [...row]); 
+    let m = matrix.map(row => [...row]);
     let n = m.length;
     let det = 1;
 
     for (let i = 0; i < n; i++) {
         let pivot = i;
-        
         for (let j = i + 1; j < n; j++) {
             if (Math.abs(m[j][i]) > Math.abs(m[pivot][i])) pivot = j;
         }
-        
         if(pivot !== i) {
             [m[i], m[pivot]] = [m[pivot], m[i]];
             det *= -1; 
@@ -256,7 +254,6 @@ function getDeterminant(matrix) {
         if (Math.abs(m[i][i]) < 1e-9) return 0;
 
         det *= m[i][i];
-        
         
         for (let j = i + 1; j < n; j++) {
             let factor = m[j][i] / m[i][i];
